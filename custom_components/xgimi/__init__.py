@@ -1,4 +1,5 @@
 """Xgimi Projector Integration"""
+
 from __future__ import annotations
 
 from typing import Final
@@ -13,6 +14,7 @@ PLATFORMS: Final[list[Platform]] = [
     Platform.REMOTE,
 ]
 
+
 async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> bool:
     """Set up a config entry."""
     hass.data.setdefault(DOMAIN, {})
@@ -25,6 +27,7 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> b
     await hass.config_entries.async_forward_entry_setups(config_entry, PLATFORMS)
 
     return True
+
 
 async def async_unload_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> bool:
     """Unload a config entry."""
