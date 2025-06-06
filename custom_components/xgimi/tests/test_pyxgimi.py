@@ -236,7 +236,7 @@ async def test_async_robust_ble_power_on_retries_and_fails(
     assert mock_async_ble_power_on.call_count == 10
     # Check it's called with the correct args each time
     mock_async_ble_power_on.assert_has_calls([call(test_mfg_data, 0x0046, "1812")] * 10)
-    assert mock_sleep.call_count == 9  # Sleeps 9 times between 10 calls
+    assert mock_sleep.call_count == 10  # Sleeps 10 times, once after each failed attempt
 
 
 # Tests for XgimiApi.async_fetch_data

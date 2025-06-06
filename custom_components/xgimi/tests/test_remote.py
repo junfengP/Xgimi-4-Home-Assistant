@@ -1,5 +1,6 @@
 import pytest
-from unittest.mock import AsyncMock, MagicMock, patch, call
+import logging
+from unittest.mock import AsyncMock, MagicMock, patch, call, PropertyMock
 
 from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
@@ -40,9 +41,7 @@ def mock_xgimi_api():
     api.alive_port = XGIMI_ALIVE_PORT
     api.manufacturer_data = MOCK_TOKEN
     # Configure is_on as a property that can be set
-    type(api).is_on = MagicMock(
-        return_value=True
-    )  # Default to True, can be changed in tests
+    type(api).is_on = PropertyMock(return_value=True)  # Use PropertyMock
     return api
 
 
@@ -317,7 +316,7 @@ async def test_remote_async_send_command_exception(
 # Test XgimiRemote initialization logging
 def test_remote_init_logging(mock_xgimi_api: AsyncMock, caplog):
     """Test logging during XgimiRemote initialization."""
-    # caplog.set_level(logging.INFO) # Ensure INFO logs are captured if not default
+    caplog.set_level(logging.DEBUG, logger="custom_components.xgimi.remote")
     # Remote variable was assigned but not used. Instantiation is enough for logging.
     XgimiRemote(mock_xgimi_api, "LogTest", "log_test_id_123")
     assert (
@@ -332,6 +331,7 @@ async def test_async_setup_platform_logging(
     mock_xgimi_api_cls: MagicMock, hass: HomeAssistant, caplog
 ):
     """Test logging in async_setup_platform."""
+    caplog.set_level(logging.DEBUG, logger="custom_components.xgimi.remote")
     mock_add_entities_callback = MagicMock()
     config = {CONF_HOST: MOCK_HOST, CONF_NAME: "PlatformLogger", CONF_TOKEN: "tokenlog"}
 
@@ -355,6 +355,7 @@ async def test_async_setup_entry_logging(
     caplog,
 ):
     """Test logging in async_setup_entry."""
+    caplog.set_level(logging.DEBUG, logger="custom_components.xgimi.remote")
     mock_add_entities_callback = MagicMock()
     mock_config_entry.title = "EntryLogger"
     mock_config_entry.unique_id = "entry_logger_uid"
@@ -391,6 +392,7 @@ async def test_remote_method_logging(
     remote_entity: XgimiRemote, mock_xgimi_api: AsyncMock, caplog
 ):
     """Test logging within XgimiRemote methods."""
+    caplog.set_level(logging.DEBUG, logger="custom_components.xgimi.remote")
     # async_update
     await remote_entity.async_update()
     assert f"Fetching update for XgimiRemote: {MOCK_NAME}" in caplog.text
